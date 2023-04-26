@@ -48,7 +48,7 @@ This endpoint creates the necessary tables in the database. It expects no reques
 
 #### Request
 
-```arduino
+```mysql
 POST /setup-database
 HTTP/1.1 200 OK
 Content-Type: application/json
@@ -69,7 +69,7 @@ This endpoint creates a new user account in the database. It expects a JSON obje
 
 #### Request
 
-```
+```mysql
 POST /register
 Content-Type: application/json
 
@@ -83,7 +83,7 @@ Content-Type: application/json
 
 #### Response
 
-```
+```mysql
 HTTP/1.1 200 OK
 Content-Type: application/json
 
@@ -101,7 +101,7 @@ This endpoint authenticates an existing user and returns a JSON Web Token (JWT).
 
 Request
 
-```
+```mysql
 POST /login
 Content-Type: application/json
 
@@ -112,7 +112,7 @@ Content-Type: application/json
 ```
 Response
 
-```
+```mysql
 HTTP/1.1 200 OK
 Content-Type: application/json
 
