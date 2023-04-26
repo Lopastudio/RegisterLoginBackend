@@ -186,3 +186,10 @@ fetch('http://localhost:3050/login', {
 .then(data => console.log(data))
 .catch(error => console.error(error));
 ```
+## Contributing
+
+Contributions are **always welcome**!
+
+## Authors
+
+- [@Lopastudio](https://www.github.com/Lopastudio)
