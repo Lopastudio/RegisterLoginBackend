@@ -1,77 +1,188 @@
-# RegisterLoginBackend
-This is a simple user authentication API built using Express, MySQL, bcrypt and JWT. The API provides endpoints to register a new user, login an existing user and set up the necessary database tables.
-Requirements
+# Authentication API
+### !!! ***WARNING** THIS PROJECT DOES NOT INCLUDE ANY SOURCE VALIDATION SO ANYONE THAT KNOWS API´S URL WOULD BE ABLE TO USE IT !!!*
 
-To use this API, you will need to have Node.js and MySQL installed on your machine.
-Setup
+This is a Node.js server-side API for user authentication using MySQL, Express, and bcrypt. It exposes the following endpoints:
+- `/setup-database`: creates the necessary tables in the database.
+- `/register`: creates a new user account in the database.
+- `/login`: authenticates an existing user and returns a JSON Web Token (JWT).
+## Dependencies
 
-    Clone the repository:
+This API uses the following dependencies:
 
-bash
+- `express`: web application framework for Node.js.
+- `body-parser`: middleware for parsing HTTP request bodies.
+- `bcrypt`: password hashing function.
+- `jsonwebtoken`: JSON Web Token implementation.
+- `mysql`: MySQL driver for Node.js.
+- `cors`: middleware for enabling Cross-Origin Resource Sharing.
 
-git clone https://github.com/your-username/express-mysql-jwt-authentication-api.git
+## Configuration
 
-    Install dependencies:
+Before running the application, you need to configure the database connection by setting the following properties in the connection object:
 
-bash
+- `host`: the hostname of the MySQL server.
+- `user`: the MySQL username.
+- `password`: the MySQL password.
+- `database`: the name of the MySQL database.
 
-cd express-mysql-jwt-authentication-api
-npm install
+You also need to set a value for the `secret_key` parameter in the `jwt.sign` function calls in the `/register` and `/login` endpoints.
+## Installation
 
-    Create a new MySQL database and run the following SQL script to create the necessary users table:
+Install my-project with npm
 
-sql
+```bash
+  npm init
+  git clone https://github.com/Lopastudio/RegisterLoginBackend.git
+  npm install express body-parser bcrypt jsonwebtoken mysql cors
+```
+And now we just start it up
+```bash
+  node index.js
+```
+    
+## API Endpoints
 
-CREATE TABLE IF NOT EXISTS users (
-    id INT(11) NOT NULL AUTO_INCREMENT,
-    email VARCHAR(255) NOT NULL,
-    username VARCHAR(191) NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    favorites TEXT,
-    PRIMARY KEY (id),
-    UNIQUE KEY (username)
-);
+### /setup-database
 
-    Update the MySQL connection details in the connection object in the index.js file:
+This endpoint creates the necessary tables in the database. It expects no request parameters and returns a JSON object with a `message` property.
 
-javascript
+#### Request
 
-const connection  = mysql.createConnection({
-    host: '<your-mysql-host>',
-    user: '<your-mysql-username>',
-    password: '<your-mysql-password>',
-    database: '<your-mysql-database>'
-});
+```arduino
+POST /setup-database
+HTTP/1.1 200 OK
+Content-Type: application/json
 
-    Run the server:
+{
+  "message": "Database tables created!"
+}
+```
 
-sql
+### /register
 
-npm start
+This endpoint creates a new user account in the database. It expects a JSON object with the following properties in the request body:
 
-Endpoints
-/setup-database (POST)
+    email: the user's email address.
+    username: the user's username.
+    password: the user's password.
+    favorites: a JSON array of the user's favorite items.
 
-This endpoint creates the necessary users table in the MySQL database. It does not require any parameters.
-/register (POST)
+#### Request
 
-This endpoint registers a new user. It requires the following parameters in the request body:
+```
+POST /register
+Content-Type: application/json
 
-    email (string): The user's email address.
-    username (string): The user's username.
-    password (string): The user's password.
-    favorites (string): The user's favorites.
+{
+  "email": "example@example.com",
+  "username": "example",
+  "password": "password123",
+  "favorites": ["item1", "item2", "item3"]
+}
+```
 
-/login (POST)
+#### Response
 
-This endpoint logs in an existing user. It requires the following parameters in the request body:
+```
+HTTP/1.1 200 OK
+Content-Type: application/json
 
-    username (string): The user's username.
-    password (string): The user's password.
+{
+  "token": "<JWT token>"
+}
+```
 
-Security
+/login
 
-This API uses bcrypt to securely store passwords in the database and JWT to generate and verify tokens for authenticated requests. The secret key used to sign the JWT tokens is stored in the index.js file and should be kept secret in production environments.
-License
+This endpoint authenticates an existing user and returns a JSON Web Token (JWT). It expects a JSON object with the following properties in the request body:
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+    username: the user's username.
+    password: the user's password.
+
+Request
+
+```
+POST /login
+Content-Type: application/json
+
+{
+  "username": "example",
+  "password": "password123"
+}
+```
+Response
+
+```
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+  "token": "<JWT token>"
+}
+```
+## License
+
+This project is licensed under [MIT](https://choosealicense.com/licenses/mit/) license.
+## Simple usage in JavaScript
+
+### Creating Databases
+
+To create the necessary tables in the database, make a POST request to the `/setup-database` endpoint:
+
+```javascript
+fetch('http://localhost:3050/setup-database', { 
+  method: 'POST' 
+})
+.then(response => response.json())
+.then(data => console.log(data))
+.catch(error => console.error(error));
+```
+
+### Registering a new user
+
+To register a new user, make a POST request to the /register endpoint:
+
+```javascript
+
+const userData = {
+  email: 'example@example.com',
+  username: 'exampleUser',
+  password: 'password123',
+  favorites: 'exampleFavorite'
+};
+
+fetch('http://localhost:3050/register', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify(userData)
+})
+.then(response => response.json())
+.then(data => console.log(data))
+.catch(error => console.error(error));
+```
+
+This will insert the user data into the users table in the database, and return a JWT token that can be used to authenticate the user in subsequent requests.
+
+### Logging in
+
+To log in a user, make a POST request to the /login endpoint:
+
+```javascript
+const loginData = {
+  username: 'exampleUser',
+  password: 'password123'
+};
+
+fetch('http://localhost:3050/login', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify(loginData)
+})
+.then(response => response.json())
+.then(data => console.log(data))
+.catch(error => console.error(error));
+```
