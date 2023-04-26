@@ -24,6 +24,7 @@ Before running the application, you need to configure the database connection by
 - `user`: the MySQL username.
 - `password`: the MySQL password.
 - `database`: the name of the MySQL database.
+- *not required* `secret key`: Your secret key
 
 You also need to set a value for the `secret_key` parameter in the `jwt.sign` function calls in the `/register` and `/login` endpoints.
 ## Installation
