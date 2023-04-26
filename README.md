@@ -18,7 +18,7 @@ This API uses the following dependencies:
 
 ## Configuration
 
-Before running the application, you need to configure the database connection by setting the following properties in the connection object:
+Before running the application, you need to configure the database connection and some other things by setting the following properties:
 
 - `host`: the hostname of the MySQL server.
 - `user`: the MySQL username.
