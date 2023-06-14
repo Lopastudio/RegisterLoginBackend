@@ -8,7 +8,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const mysql = require('mysql');
 const cors = require('cors');
-const secret_key = "your_secret_key";
+const secret_key = "your_secret_key"; //change this if you don't want to get hacked :)
 
 const app = express();
 app.use(cors());
@@ -35,7 +35,7 @@ connection.connect((err) => {
   console.log('Connected to MySQL!');
 });
 
-//setting up databases based on predefined stuff (email, username, password, favourites)
+//setting up databases based on predefined stuff (email, username, password, favourites (TEXT))
 app.post('/setup-database', (req, res) => {
     const sql = `
         CREATE TABLE IF NOT EXISTS users (
@@ -48,39 +48,40 @@ app.post('/setup-database', (req, res) => {
             UNIQUE KEY (username)
         );
     `;
-  
+    //error handling
     connection.query(sql, (err, result) => {
       if (err) {
         console.error('Error creating users table:', err);
         return res.status(500).json({ error: 'Internal server error' });
       }
-  
+      //the think everyone wants to see
       console.log('Users table created!');
       res.json({ message: 'Database tables created!' });
     });
   });
   
-// Register API
+//Register API
 app.post('/register', (req, res) => {
   const { email, username, password, favorites } = req.body;
 
-  // Encrypt password
+  //Encrypting user password
   bcrypt.hash(password, saltRounds, (err, hashedPassword) => {
     if (err) {
       console.error('Error encrypting password:', err);
       return res.status(500).json({ error: 'Internal server error' });
     }
 
-    // Insert user data into database
+    //Insert user data into database
     const sql = 'INSERT INTO users (email, username, password, favorites) VALUES (?, ?, ?, ?)';
     const values = [email, username, hashedPassword, favorites];
 
+    //error handling
     connection.query(sql, values, (err, result) => {
       if (err) {
         console.error('Error inserting user into database:', err);
         return res.status(500).json({ error: 'Internal server error' });
       }
-
+      //logging
       console.log(`User ${username} registered!`);
 
       // Create JWT token
@@ -98,7 +99,7 @@ app.post('/login', (req, res) => {
   // Get user data from database
   const sql = 'SELECT * FROM users WHERE username = ?';
   const values = [username];
-
+  //error handling
   connection.query(sql, values, (err, result) => {
     if (err) {
       console.error('Error getting user data from database:', err);
@@ -110,8 +111,9 @@ app.post('/login', (req, res) => {
       return res.status(401).json({ error: 'Invalid username or password' });
     }
 
-    // Compare passwords from user with database
+    // Compare recieved password with the password located in the database
     bcrypt.compare(password, result[0].password, (err, passwordMatch) => {
+      //error handling
       if (err) {
         console.error('Error comparing passwords:', err);
         return res.status(500).json({ error: 'Internal server error' });
@@ -132,4 +134,5 @@ app.post('/login', (req, res) => {
   });
 });
 
+//Finally, RUN IT!
 app.listen(3050, () => console.log('Server started on port 3050!'));
