@@ -1,5 +1,5 @@
-// hours wasted: 5
-// Made by Lopastudio
+// hours wasted: 7
+// Made by Patrik (Lopastudio)
 // Github: https://github.com/Lopastudio/
 
 const express = require('express');
@@ -18,6 +18,7 @@ const saltRounds = 10;
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+//database login information
 const connection  = mysql.createConnection({
     host: '',
     user: '',
@@ -25,6 +26,7 @@ const connection  = mysql.createConnection({
     database: ''
   });
 
+//connecting to the database
 connection.connect((err) => {
   if (err) {
     console.error('Error connecting to MySQL:', err);
@@ -33,7 +35,7 @@ connection.connect((err) => {
   console.log('Connected to MySQL!');
 });
 
-//setting up databases
+//setting up databases based on predefined stuff (email, username, password, favourites)
 app.post('/setup-database', (req, res) => {
     const sql = `
         CREATE TABLE IF NOT EXISTS users (
@@ -108,7 +110,7 @@ app.post('/login', (req, res) => {
       return res.status(401).json({ error: 'Invalid username or password' });
     }
 
-    // Compare passwords
+    // Compare passwords from user with database
     bcrypt.compare(password, result[0].password, (err, passwordMatch) => {
       if (err) {
         console.error('Error comparing passwords:', err);
